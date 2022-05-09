@@ -5,10 +5,19 @@ using UnityEngine;
 public class FPSPlayer : MonoBehaviour
 {
     [SerializeField]
+    private float groundRayDistance = 1f;
+    private bool isGround = false;
+
+    [SerializeField]
     private Camera playerCamera;
     public float moveSpeed = 10.0f;
     public float rotateSpeed = 5.0f;
-    Vector3 prevMouePos = Vector3.zero;
+    Vector2 prevMouePos = Vector2.zero;
+    public float jumpSpeed = 5.0f;
+    public float jumpHeight = 5.0f;
+    private float currentJumpHeight = 0;
+    private bool isJump = false;
+    private Rigidbody rigidbody;
 
     void Start()
     {
@@ -18,8 +27,14 @@ public class FPSPlayer : MonoBehaviour
 
     void Update()
     {
+        GroundCheck();
+
         Rotate();
-        Movement();
+        Jumping();
+
+        if (!isJump) {
+            Movement();
+        }
     }
 
     void Rotate() {
@@ -30,8 +45,35 @@ public class FPSPlayer : MonoBehaviour
         playerCamera.transform.Rotate(Vector3.left, mouseY * rotateSpeed);
     }
 
-    void Movement() {
+    void Movement()
+    {
         transform.Translate(Vector3.forward * Input.GetAxis("Vertical") * moveSpeed * Time.deltaTime);
         transform.Translate(Vector3.right * Input.GetAxis("Horizontal") * moveSpeed * Time.deltaTime);
+    }
+
+    void Jumping()
+    {
+        if (isJump) {
+            Vector3 velocity = Vector3.up * jumpSpeed * Time.deltaTime;
+
+            transform.Translate(velocity);
+            currentJumpHeight += velocity.y;
+
+            if (currentJumpHeight >= jumpHeight) {
+                currentJumpHeight = 0;
+                isJump = false;
+                rigidbody.isKinematic = false;
+            }
+
+        } else if (isGround && Input.GetAxis("Jump") == 1) { // TODO: isGround check
+            isJump = true;
+            rigidbody.isKinematic = true;
+        }
+    }
+
+    void GroundCheck()
+    {
+        isGround = Physics.Raycast(transform.position, Vector3.down, out var hit, groundRayDistance);
+        print(isGround);
     }
 }
