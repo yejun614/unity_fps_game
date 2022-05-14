@@ -39,12 +39,24 @@ public class FPSPlayer : MonoBehaviour
         }
     }
 
-    void Rotate() {
+    void Rotate()
+    {
         float mouseX = Input.GetAxis("Mouse X");
         float mouseY = Input.GetAxis("Mouse Y");
 
         transform.Rotate(Vector3.up, mouseX * rotateSpeed);
         playerCamera.transform.Rotate(Vector3.left, mouseY * rotateSpeed);
+
+        // Vertical rotation limit for Camera
+        // When the Y and Z values of camera localEulerAngles are 180, camera is flipped vertically.
+        Vector3 cameraAngles = playerCamera.transform.localEulerAngles;
+        if (Mathf.Abs(cameraAngles.y - 180.0f) <= 0.1f && Mathf.Abs(cameraAngles.z - 180.0f) <= 0.1f) {
+            cameraAngles.y = 0;
+            cameraAngles.z = 0;
+
+            // Change to normal angle
+            playerCamera.transform.localEulerAngles = cameraAngles;
+        }
     }
 
     void Movement()
