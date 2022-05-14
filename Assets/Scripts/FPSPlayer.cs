@@ -17,12 +17,14 @@ public class FPSPlayer : MonoBehaviour
     public float jumpHeight = 5.0f;
     private float currentJumpHeight = 0;
     private bool isJump = false;
-    private Rigidbody rigidbody;
+    private Rigidbody playerRigidbody;
 
     void Start()
     {
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
+
+        playerRigidbody = GetComponent<Rigidbody>();
     }
 
     void Update()
@@ -62,18 +64,17 @@ public class FPSPlayer : MonoBehaviour
             if (currentJumpHeight >= jumpHeight) {
                 currentJumpHeight = 0;
                 isJump = false;
-                rigidbody.isKinematic = false;
+                playerRigidbody.isKinematic = false;
             }
 
-        } else if (isGround && Input.GetAxis("Jump") == 1) { // TODO: isGround check
+        } else if (isGround && Input.GetAxis("Jump") == 1) {
             isJump = true;
-            rigidbody.isKinematic = true;
+            playerRigidbody.isKinematic = true;
         }
     }
 
     void GroundCheck()
     {
         isGround = Physics.Raycast(transform.position, Vector3.down, out var hit, groundRayDistance);
-        print(isGround);
     }
 }
