@@ -10,14 +10,17 @@ public class FPSPlayer : MonoBehaviour
 
     [SerializeField]
     private Camera playerCamera;
+
+    [Header("Player Movement")]
     public float moveSpeed = 10.0f;
     public float rotateSpeed = 5.0f;
-    Vector2 prevMouePos = Vector2.zero;
-    public float jumpSpeed = 5.0f;
-    public float jumpHeight = 5.0f;
+    public float jumpForce = 5.0f;
     private float currentJumpHeight = 0;
     private bool isJump = false;
     private Rigidbody playerRigidbody;
+
+    [Header("Audio Sources")]
+    private AudioSource audioSource;
 
     void Start()
     {
@@ -33,10 +36,7 @@ public class FPSPlayer : MonoBehaviour
 
         Rotate();
         Jumping();
-
-        if (!isJump) {
-            Movement();
-        }
+        Movement();
     }
 
     void Rotate()
@@ -67,26 +67,16 @@ public class FPSPlayer : MonoBehaviour
 
     void Jumping()
     {
-        if (isJump) {
-            Vector3 velocity = Vector3.up * jumpSpeed * Time.deltaTime;
-
-            transform.Translate(velocity);
-            currentJumpHeight += velocity.y;
-
-            if (currentJumpHeight >= jumpHeight) {
-                currentJumpHeight = 0;
-                isJump = false;
-                playerRigidbody.isKinematic = false;
-            }
-
-        } else if (isGround && Input.GetAxis("Jump") == 1) {
+        if (!isJump && isGround && Input.GetAxis("Jump") > 0)
+        {
             isJump = true;
-            playerRigidbody.isKinematic = true;
+            playerRigidbody.AddForce(Vector3.up * jumpForce);
         }
     }
 
     void GroundCheck()
     {
         isGround = Physics.Raycast(transform.position, Vector3.down, out var hit, groundRayDistance);
+        isJump = false;
     }
 }
