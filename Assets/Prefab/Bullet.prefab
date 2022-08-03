@@ -113,7 +113,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   damage: 10
   destroyTime: 10
-  speed: 10
+  speed: 30
   direction: {x: 0, y: 0, z: 1}
 --- !u!54 &2201017769981766960
 Rigidbody:
